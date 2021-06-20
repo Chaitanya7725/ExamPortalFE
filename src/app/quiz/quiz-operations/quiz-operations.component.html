@@ -1,0 +1,151 @@
+<div>
+    {{status}}
+</div>
+<div class="container">
+    <p>
+        <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#addquiz" aria-expanded="false" aria-controls="addquiz">
+            Add Quiz
+        </button>
+        <button class="btn btn-success" type="button" data-toggle="collapse" data-target="#addquestions" aria-expanded="false" aria-controls="addquestions">
+            Add Questions
+        </button>
+    </p>
+    <div class="collapse" id="addquiz">
+        <div class="card mt-5" style="padding: 20px;">
+            <h2>Add Quiz</h2>
+            <form>
+                <div class="form-group row">
+                    <label class="col-sm-2 col-form-label" for="name">Name:</label>
+                    <div class="col-sm-10">
+                        <input class="form-control" required type="text" [(ngModel)]="quiz.name" name="name" id="name"
+                        placeholder="Enter quiz name..." />
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="time" class="col-sm-2 col-form-label">Time : </label>
+                    <div class="col-sm-10">
+                        <input class="form-control" type="number" [(ngModel)]="quiz.time" name="time" id="time"
+                        placeholder="Total time of test" required />
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="description" class="col-sm-2 col-form-label">Description: </label>
+                    <div class="col-sm-10">
+                        <input class="form-control" type="string" [(ngModel)]="quiz.description" name="description" id="description" required
+                        placeholder="Enter description" />
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="threshold" class="col-sm-2 col-form-label">Threshold: </label>
+                    <div class="col-sm-10">
+                        <input class="form-control" type="threshold" [(ngModel)]="quiz.threshold" name="threshold" id="threshold" required
+                            placeholder="Enter threshold" />
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-sm-10">
+                        <input class="btn btn-success" type="submit" name="submit_reg" value="Add Quiz" (click)="addQuiz()">
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="collapse" id="addquestions">
+        <div class="card mt-5" style="padding: 20px;">
+            <h2>Add Questions</h2>
+            <form>
+                <div class="form-group row">
+                    <label for="question" class="col-sm-2 col-form-label">Question</label>
+                    <div class="col-sm-10">
+                        <input class="form-control" required type="text" [(ngModel)]="question.question" name="question" id="question" 
+                        placeholder="Start typing your question here "/>
+                    </div>
+                </div>
+                <!-- <div>
+                    <label for="question" class="col-sm-2 col-form-label">Image</label>
+                    <div class="col-sm-10">
+                        <input type="button" value="Get Image">
+                    </div>
+                </div> -->
+                <div class="form-group row">
+                    <label for="mark" class="col-sm-2 col-form-label">Mark</label>
+                    <div class="col-sm-10">
+                        <input class="form-control" required type="number" [(ngModel)]="question.mark" name="mark" id="mark" />
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="answer" class="col-sm-2 col-form-label">Options</label>
+                    <div class="row col-sm-10">
+                        <div class="col-md-5">
+                          <input type="text" class="form-control" name="option1" [(ngModel)]="question.option1" placeholder="1st option">
+                        </div>
+                        <div class="col-md-5">
+                          <input type="text" class="form-control" name="option2" [(ngModel)]="question.option2" placeholder="2nd option">
+                        </div>
+                        <div class="col-md-2">
+                            <div class="dropdown">
+                                <a class="btn btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                  Correct Answer
+                                </a>
+                                <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                                  <a (click)="getSelectedDropdown(1)"  class="dropdown-item" value="1">1st Option</a>
+                                  <a (click)="getSelectedDropdown(2)" class="dropdown-item" value="2">2nd Option</a>
+                                  <a (click)="getSelectedDropdown(3)" class="dropdown-item" value="3">3rd Option</a>
+                                  <a (click)="getSelectedDropdown(4)" class="dropdown-item" value="4">4th Option</a>
+                                </div>
+                              </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="answer" class="col-sm-2 col-form-label"></label>
+                    <div class="row col-sm-10">
+                        <div class="col-md-5">
+                          <input type="text" class="form-control" name="option3" [(ngModel)]="question.option3" placeholder="3rd option">
+                        </div>
+                        <div class="col-md-5">
+                          <input type="text" class="form-control" name="option4" [(ngModel)]="question.option4" placeholder="4th option">
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group now">
+                    <div class="col-sm-10">
+                        <input class="btn btn-success" type="submit" name="submit_reg" value="Add Question" (click)="addQuestion()">
+                    </div>
+                 </div>
+            </form>
+        </div>
+    </div>
+
+    <table class="table table-bordered table-dark">
+        <thead>
+          <tr>
+            <th scope="col">#</th>
+            <th scope="col">Question</th>
+            <th scope="col">Mark</th>
+            <th scope="col">Option1</th>
+            <th scope="col">Option2</th>
+            <th scope="col">Option3</th>
+            <th scope="col">Option4</th>
+            <th scope="col">Correct</th>
+            <th scope="col">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let question of message;let i=index">
+            <td>{{i+1}}</td>
+            <td>{{question.question}}</td>
+            <td>{{question.mark}}</td>
+            <td>{{question.option1}}</td>
+            <td>{{question.option2}}</td>
+            <td>{{question.option3}}</td>
+            <td>{{question.option4}}</td>
+            <td>{{question.correctOption}}</td>
+            <td>
+                <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#exampleModal" (click)="editQuestion(question)">Edit</button>
+                <button class="btn btn-danger btn-sm" (click)="deleteQuestion(question.id)">Delete</button>
+            </td>
+          </tr>
+        </tbody>
+    </table>
+</div>

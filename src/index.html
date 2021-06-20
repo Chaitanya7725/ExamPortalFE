@@ -6,8 +6,52 @@
   <base href="/">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link type="text/css" rel="stylesheet" href="assets/glider/glider.min.css"/>
+  <script type="text/javascript" src="assets/glider/glider.min.js"></script>
+  <link type="text/css" rel="stylesheet" href="assets/font-awesome.min.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link type="text/css" rel="stylesheet" href="assets/magiczoomplus/magiczoomplus.css"/>
+  <script type="text/javascript" src="assets/magiczoomplus/magiczoomplus.js"></script>
 </head>
 <body>
   <app-root></app-root>
 </body>
+<script>
+  window.addEventListener('load', function(){
+    new Glider(document.querySelector('.glider'), {
+      slidesToShow: 9,
+      slidesToScroll: 9,
+      draggable: true,
+      arrows: {
+          prev: '.glider-prev',
+          next: '.glider-next'
+      }
+      // ,
+      // responsive: [
+      //   {
+      //     // screens greater than >= 775px
+      //     breakpoint: 775,
+      //     settings: {
+      //       // Set to `auto` and provide item width to adjust to viewport
+      //       slidesToShow: 'auto',
+      //       slidesToScroll: 'auto',
+      //       itemWidth: 150,
+      //       duration: 0.25
+      //     }
+      //   },{
+      //     // screens greater than >= 1024px
+      //     breakpoint: 1024,
+      //     settings: {
+      //       slidesToShow: 15,
+      //       slidesToScroll: 3,
+      //       itemWidth: 10,
+      //       duration: 0.25
+      //     }
+      //   }
+      // ]
+    });    
+  })
+</script>
 </html>
