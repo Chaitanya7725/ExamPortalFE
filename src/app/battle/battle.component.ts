@@ -3,6 +3,8 @@ import { ActivatedRoute } from '@angular/router';
 import { CountdownComponent } from 'ngx-countdown';
 import { BattleService } from '../battle.service';
 import { Question } from '../question';
+import { QuizService } from '../quiz.service';
+import { QuizOperationsComponent } from '../quiz/quiz-operations/quiz-operations.component';
 
 @Component({
   selector: 'app-battle',
@@ -25,6 +27,7 @@ export class BattleComponent implements OnInit {
   public buttonName:any = 'Pause';
   quizIdV: any;
   populateQuestionData=[] as any;
+  retrievedImage: any;
   p=  {
     id:0,
     question:"",
@@ -43,9 +46,12 @@ export class BattleComponent implements OnInit {
     cqid:0,
     os:0
   };
+  battleImage: any;
+  base64Data: any;
 
   constructor(private service:BattleService,
-    private route: ActivatedRoute) {
+    private route: ActivatedRoute,
+    private quiz:QuizService) {
       this.route.params.subscribe(params=>this.quizIdV=params.id);
       this.service.getQuestionsCount(this.quizIdV).subscribe(
         (params)=>{
@@ -76,10 +82,22 @@ export class BattleComponent implements OnInit {
   }
 
   getQuestionById(optionalParams:number){
+    this.retrievedImage="";
     this.service.getQuestionById(optionalParams).subscribe(
       (params)=>{
         this.populateQuestionData=params;
-      });
+        if(this.populateQuestionData.imageName!="" && this.populateQuestionData.imageName!=null && this.populateQuestionData.imageName!=undefined){
+          this.quiz.getImage(this.populateQuestionData.imageName)
+          .subscribe(
+            (response: any) => {
+              this.battleImage = response;
+              this.base64Data = this.battleImage.picByte;
+              this.retrievedImage = 'data:image/jpeg;base64,' + this.base64Data;
+            }
+          );
+        }
+      }
+    );
   }
 
   index(i:number){
@@ -93,13 +111,11 @@ export class BattleComponent implements OnInit {
       os:Number.parseInt(this.optionSelected)
     };
     if(this.options.os!=null){
-      console.log(JSON.stringify(this.options));
       this.service.saveAnswer(this.options).subscribe();
     }
 
     var nextIndex=this.numbers.indexOf(this.currentQuestionId);
     if(nextIndex<this.numbers.length){
-      // console.log("inside if")
       this.index(this.numbers[nextIndex+1]);
       this.optionSelected=false
     }

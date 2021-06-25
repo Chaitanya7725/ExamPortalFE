@@ -57,12 +57,10 @@
     <div class="row" style="border: 1px solid black;">
         <div class="col-sm-7 col-md-7 col-xl-7" style="background-color: whitesmoke;padding:1% ">
             <cdk-virtual-scroll-viewport itemSize="150" style="height: 500px;">
-                <h5>Directions: </h5><p>Read the following questions carefully and answer
-                the question that follow.</p>
+                <h5>Directions: </h5><p>Read the following questions carefully and answer the question that follow.</p>
                 <p>{{populateQuestionData.question}}</p>
-                <p></p>
-                <a href="../assets/cuboid_small.png" class="MagicZoom">
-                <img src="../assets/cuboid_small.png"/>
+                <a href="{{retrievedImage}}" class="MagicZoom">
+                    <img src="{{retrievedImage}}"/>
                 </a>
             </cdk-virtual-scroll-viewport>
         </div>

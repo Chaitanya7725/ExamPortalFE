@@ -1,15 +1,67 @@
 <div>
     {{status}}
 </div>
-<div class="container">
-    <p>
-        <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#addquiz" aria-expanded="false" aria-controls="addquiz">
-            Add Quiz
-        </button>
-        <button class="btn btn-success" type="button" data-toggle="collapse" data-target="#addquestions" aria-expanded="false" aria-controls="addquestions">
-            Add Questions
-        </button>
-    </p>
+<div class="container" >
+    <!-- <div class="card mt-2 text-center">
+        <div class="card-body">
+            <button class="btn btn-primary mr-1" type="button" data-toggle="collapse" data-target="#addquiz" aria-expanded="false" aria-controls="addquiz">
+                Add Quiz
+            </button>
+            <button class="btn btn-success mr-1" type="button" data-toggle="collapse" data-target="#addquestions" aria-expanded="false" aria-controls="addquestions">
+                Add Questions
+            </button>
+            <button class="btn btn-info" type="button" data-toggle="collapse" data-target="#addimages" aria-expanded="false" aria-controls="addimages">
+                Add Images
+            </button>              
+        </div>
+    </div> -->
+    <div class="collapse" id="addimages">
+        <div class="row">
+            <div class="col-sm-6 col-md-6 col-xl-6">
+                <div class="card mt-5 " style="padding: 20px;">
+                    <h2>Add Image</h2>
+                    <div class="col-sm-6 col-md-6 col-xl-6">
+                        <input type="file" (change)="onFileChanged($event)">
+                    </div>
+                    <div class="col-sm-6 col-md-6 col-xl-6">
+                        <input type="button" (click)="onUpload()" value="upload">
+                    </div>
+                </div>
+                <div class="container row">
+                    <div class="col-sm-6 col-md-6 col-xl-6">
+                        <div *ngIf=imageMessage>{{imageMessage}}</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6 col-md-6 col-xl-6">
+                <div class="card mt-5 " style="padding: 2%">
+                    <div class="row">
+                        <div class="col-sm-6 col-md-6 col-xl-6">
+                            <input type="text" class="form-control" id="imagename" placeholder="Image name" [(ngModel)]="imageName" name="imageName" />
+                            <input type="button" (click)="getImage()" value="Get Image">    
+                        </div>
+                        <div class="col-sm-6 col-md-6 col-xl-6">
+                            <div *ngIf="retrievedImage">
+                                <img style="max-width: 100%; height: auto;"  [src]="retrievedImage">
+                            </div>                                                    
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <hr>
+        <h2>All Images</h2>
+        <div class="container" *ngIf="retrievedImagesWithName">
+            <div class="row justify-content-around align-items-center" style="height: 40vh; width:100%">
+                <div class="col-lg-3 col-md-6 col-sm-12 border m-3 p-0" style="height:20vh" *ngFor="let ri of retrievedImagesWithName">
+                    <img style="max-width: 100%; height: auto;" [src]="ri.picByte" alt=""/>
+                    <div style="position: absolute;
+                    top: 8px;
+                    left: 16px;" class="top-left">{{ri.imageName}}</div>
+                </div>
+            </div>
+        </div>
+    </div>
     <div class="collapse" id="addquiz">
         <div class="card mt-5" style="padding: 20px;">
             <h2>Add Quiz</h2>
@@ -115,9 +167,12 @@
                  </div>
             </form>
         </div>
+        <div>
+            {{status}}
+        </div>
     </div>
 
-    <table class="table table-bordered table-dark">
+    <table *ngIf="message" class="table table-bordered table-dark mt-2">
         <thead>
           <tr>
             <th scope="col">#</th>
@@ -128,6 +183,7 @@
             <th scope="col">Option3</th>
             <th scope="col">Option4</th>
             <th scope="col">Correct</th>
+            <th scope="col">Image</th>
             <th scope="col">Actions</th>
           </tr>
         </thead>
@@ -141,6 +197,7 @@
             <td>{{question.option3}}</td>
             <td>{{question.option4}}</td>
             <td>{{question.correctOption}}</td>
+            <td>{{question.imageName}}</td>
             <td>
                 <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#exampleModal" (click)="editQuestion(question)">Edit</button>
                 <button class="btn btn-danger btn-sm" (click)="deleteQuestion(question.id)">Delete</button>
@@ -149,3 +206,188 @@
         </tbody>
     </table>
 </div>
+<div class="accordion" id="accordionExample">
+    <div class="card">
+      <div class="card-header" id="headingOne">
+        <h2 class="mb-0">
+          <button class="btn btn-link btn-block text-left" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+            Add Quiz
+          </button>
+        </h2>
+      </div>
+  
+      <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#accordionExample">
+        <div class="card-body">
+            <div class="card mt-1" style="padding: 20px;">
+                <h2>Add Quiz</h2>
+                <form>
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label" for="name">Name:</label>
+                        <div class="col-sm-10">
+                            <input class="form-control" required type="text" [(ngModel)]="quiz.name" name="name" id="name"
+                            placeholder="Enter quiz name..." />
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="time" class="col-sm-2 col-form-label">Time : </label>
+                        <div class="col-sm-10">
+                            <input class="form-control" type="number" [(ngModel)]="quiz.time" name="time" id="time"
+                            placeholder="Total time of test" required />
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="description" class="col-sm-2 col-form-label">Description: </label>
+                        <div class="col-sm-10">
+                            <input class="form-control" type="string" [(ngModel)]="quiz.description" name="description" id="description" required
+                            placeholder="Enter description" />
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="threshold" class="col-sm-2 col-form-label">Threshold: </label>
+                        <div class="col-sm-10">
+                            <input class="form-control" type="threshold" [(ngModel)]="quiz.threshold" name="threshold" id="threshold" required
+                                placeholder="Enter threshold" />
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-sm-10">
+                            <input class="btn btn-success" type="submit" name="submit_reg" value="Add Quiz" (click)="addQuiz()">
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header" id="headingTwo">
+          <h2 class="mb-0">
+            <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+              Add Questions
+            </button>
+          </h2>
+        </div>
+        <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionExample">
+          <div class="card-body">
+            <div class="card mt-1" style="padding: 20px;">
+                <h2>Add Questions</h2>
+                <form>
+                    <div class="form-group row">
+                        <label for="question" class="col-sm-2 col-form-label">Question</label>
+                        <div class="col-sm-10">
+                            <input class="form-control" required type="text" [(ngModel)]="question.question" name="question" id="question" 
+                            placeholder="Start typing your question here "/>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="image" class="col-sm-2 col-form-label">Image</label>
+                        <div class="col-sm-10">
+                            <select #cricket (change)="updateOption($event)">
+                                <option value="">Select image</option>
+                                <option *ngFor="let ri of retrievedImagesWithName" [value]="ri.imageName">
+                                    {{ri.imageName}}
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="mark" class="col-sm-2 col-form-label">Mark</label>
+                        <div class="col-sm-10">
+                            <input class="form-control" required type="number" [(ngModel)]="question.mark" name="mark" id="mark" />
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="answer" class="col-sm-2 col-form-label">Options</label>
+                        <div class="row col-sm-10">
+                            <div class="col-md-5">
+                              <input type="text" class="form-control" name="option1" [(ngModel)]="question.option1" placeholder="1st option">
+                            </div>
+                            <div class="col-md-5">
+                              <input type="text" class="form-control" name="option2" [(ngModel)]="question.option2" placeholder="2nd option">
+                            </div>
+                            <div class="col-md-2">
+                                <div class="dropdown">
+                                    <select (change)="getSelectedDropdown($event)">
+                                        <option [value]="">Correct Option</option>
+                                        <option [value]="1">1st Option</option>
+                                        <option [value]="2">2nd Option</option>
+                                        <option [value]="3">3rd Option</option>
+                                        <option [value]="4">4th Option</option>
+                                    </select>
+                                    <!-- <a class="btn btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                      Correct Answer
+                                    </a>
+                                    <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                                      <a (click)="getSelectedDropdown(1)"  class="dropdown-item" value="1">1st Option</a>
+                                      <a (click)="getSelectedDropdown(2)" class="dropdown-item" value="2">2nd Option</a>
+                                      <a (click)="getSelectedDropdown(3)" class="dropdown-item" value="3">3rd Option</a>
+                                      <a (click)="getSelectedDropdown(4)" class="dropdown-item" value="4">4th Option</a>
+                                    </div> -->
+                                  </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="answer" class="col-sm-2 col-form-label"></label>
+                        <div class="row col-sm-10">
+                            <div class="col-md-5">
+                              <input type="text" class="form-control" name="option3" [(ngModel)]="question.option3" placeholder="3rd option">
+                            </div>
+                            <div class="col-md-5">
+                              <input type="text" class="form-control" name="option4" [(ngModel)]="question.option4" placeholder="4th option">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group now">
+                        <div class="col-sm-10">
+                            <input class="btn btn-success" type="submit" name="submit_reg" value="Add Question" (click)="addQuestion()">
+                        </div>
+                     </div>
+                </form>
+            </div>
+          </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header" id="headingThree">
+          <h2 class="mb-0">
+            <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse" data-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+              Add Image
+            </button>
+          </h2>
+        </div>
+        <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordionExample">
+          <div class="card-body">
+            <div class="card mt-1" style="padding: 20px;">
+                <h2>Add Image</h2>
+                <div class="col-sm-6 col-md-6 col-xl-6">
+                    <input type="file" (change)="onFileChanged($event)">
+                </div>
+                <div class="col-sm-6 col-md-6 col-xl-6">
+                    <input type="button" (click)="onUpload()" value="upload">
+                </div>
+            </div>
+            <div class="container row">
+                <div class="col-sm-6 col-md-6 col-xl-6">
+                    <div *ngIf=imageMessage>{{imageMessage}}</div>
+                </div>
+            </div>
+          </div>
+          <div class="container" *ngIf="retrievedImagesWithName">
+            <hr>
+            <h2>All Images</h2>
+                <div class="row justify-content-around align-items-center" style="width:100%">
+                    <div class="col-lg-3 col-md-6 col-sm-12 border m-1 p-0" *ngFor="let ri of retrievedImagesWithName">
+                        <img style="max-width: 100%; height: auto;" src="{{ri.picByte}}" alt=""/>
+                        <div style="position: absolute;
+                        top: 8px;
+                        left: 16px;" class="top-left">{{ri.imageName}}</div>
+                    </div>
+                </div>
+          </div>  
+        </div>
+    </div>
+
+</div>    

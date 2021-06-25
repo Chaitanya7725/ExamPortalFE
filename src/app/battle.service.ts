@@ -19,7 +19,6 @@ export class BattleService {
   }
 
   public saveAnswer(options: { cqid: any; os: any; }) {
-    console.log("inside saveAnswer");
     return this.http.post(this.API+"/answer",options,{responseType:'text' as 'json'});
   }
 }

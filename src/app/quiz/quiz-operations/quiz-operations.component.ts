@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, ActivatedRouteSnapshot, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { Question } from 'src/app/question';
@@ -15,13 +16,25 @@ export class QuizOperationsComponent implements OnInit {
   question:Question=new Question();
   message:any;
   questionToUpdate={
-    id:0,question:"",mark:0,quiz:{id:0},option1:"",option2:"",option3:"",option4:"",correctOption:""
+    id:0,question:"",mark:0,quiz:{id:0},option1:"",option2:"",option3:"",option4:"",correctOption:"",imageName:""
   };
   quizIdV:any;
+
+  selectedFile!: File;
+  retrievedImage: any;
+  retrievedImages: string[] =[];
+  retrievedImagesWithName= Array<{ id: number; imageName: string;picByte:string }>();
+
+  base64Data: any;
+  retrieveResonse: any;
+  imageMessage: string="";
+  imageName: any;
+
   constructor(
     private service:QuizService,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private fb: FormBuilder, 
     ) {}
   status:String="";
   output!: JSON;
@@ -33,7 +46,10 @@ export class QuizOperationsComponent implements OnInit {
     this.route.params.subscribe(params=>this.quizIdV=params.id);
     this.obj['id']=this.quizIdV;
     this.passId()
-    this.getQuestionByQuizId();
+    if(this.quizIdV!=undefined){
+      this.getQuestionByQuizId();
+    }
+    this.getAllImages();
   }
 
   public passId(){
@@ -41,10 +57,12 @@ export class QuizOperationsComponent implements OnInit {
   }
 
   public addQuiz(){
-    let resp=this.service.addQuiz(this.quiz);
-    resp.subscribe((data:any)=>{this.message=data})
-    this.status="Quiz added";
-    this.router.navigate(['/quiz']);
+    if(this.quiz!=null){
+      let resp=this.service.addQuiz(this.quiz);
+      resp.subscribe((data:any)=>{this.message=data})
+      this.status="Quiz added";
+      this.router.navigate(['/quiz']);
+    }
   }
 
   public deleteQuiz(id:number){
@@ -59,8 +77,8 @@ export class QuizOperationsComponent implements OnInit {
     this.router.navigate(['addQuestion/'+this.quizIdV]);
   }
 
-  getSelectedDropdown(value:number){
-    this.question.correctOption=value;
+  getSelectedDropdown(event:any){
+    this.question.correctOption=event.target.value;
   }
 
   public deleteQuestion(id:number){
@@ -86,4 +104,48 @@ export class QuizOperationsComponent implements OnInit {
     // this.router.navigate(['/quiz']);
   }
 
+  public onFileChanged(event:any) {
+    this.selectedFile = event.target.files[0];
+  }
+
+  onUpload() {
+    const uploadImageData = new FormData();
+    uploadImageData.append('imageFile', this.selectedFile, this.selectedFile.name);
+    this.service.uploadImage(uploadImageData).subscribe(
+      (response)=>{
+        this.imageMessage=String(response);
+      }
+    );
+  }
+
+  getImage() {
+    this.service.getImage(this.imageName)
+      .subscribe(
+        (response: any) => {
+          this.retrieveResonse = response;
+          this.base64Data = this.retrieveResonse.picByte;
+          this.retrievedImage = 'data:image/jpeg;base64,' + this.base64Data;
+        }
+    );
+  }
+
+  getAllImages(){
+    var type='data:image/jpeg;base64,'
+    this.service.getAllImages().subscribe(
+      (response:any)=>{
+        response.forEach((element: any) => {
+          this.retrieveResonse = element;
+          this.retrievedImagesWithName.push({
+            id:element.id,
+            imageName:element.name,
+            picByte:'data:image/jpeg;base64,'+element.picByte
+          });
+        });
+      }
+    );
+  }
+
+  updateOption(event:any){
+    this.question.imageName=event.target.value;
+  }
 }

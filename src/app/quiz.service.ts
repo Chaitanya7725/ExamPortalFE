@@ -12,6 +12,7 @@ export class QuizService {
 
   API="http://localhost:8080";
   APIQuestion="http://localhost:8080/question";
+  APIImage="http://localhost:8080/image";
 
   public addQuiz(quiz: any) {
     return this.http.post(this.API+"/add",quiz,{responseType:'text' as 'json'});
@@ -55,6 +56,18 @@ export class QuizService {
 
   editQuestion(questionToUpdate: { id: number; question: string; mark: number; }) {
     return this.http.put(this.APIQuestion+"/update",questionToUpdate,{responseType:'text' as 'json'});
+  }
+
+  uploadImage(uploadImageData: FormData) {
+    return this.http.post(this.APIImage+"/upload",uploadImageData,{ responseType:'text' as 'json' });
+  }
+
+  getAllImages(){
+    return this.http.get(this.APIImage+"/getallimages");
+  }
+
+  getImage(name:string):Observable<any>{
+    return this.http.get(this.APIImage+"/"+name);
   }
 
 }
