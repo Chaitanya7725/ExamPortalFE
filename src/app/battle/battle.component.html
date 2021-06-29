@@ -1,62 +1,57 @@
 <!-- <app-header></app-header> -->
-<div id="content" class="container">
-    <div class="row" style="height: 9%;">
-        <div class="col-sm-4 col-md-4 col-xl-4" style="border: 1px solid black;padding: 3px;">
+<div id="content" class="container-fluid" style="padding: 0%;" >
+    <div class="row" style="height: 9%;margin-right: 0%;">
+        <div class="col-sm-4 col-md-4 col-xl-4" style="border: 1px solid black;">
             <button style="margin-left: 15%;margin-top: 4%;width: 70%;" mat-raised-button color="coral" >English Language</button>
         </div>
         <div class="col-sm-6 col-md-6 col-xl-6" style="border: 1px solid black;">
             <section>
                 <div class="row" style="padding: 1px;">
                     <div style="text-align: center;margin-top: 2%;" class="col-sm-3 col-md-3 col-xl-3">
-                        <p style="margin-bottom: 0%;">{{answered}}</p>
+                        <p style="margin-bottom: 0%;">{{quizDetails.answered}}</p>
                         <p style="margin-bottom: 0%;">Answered</p>
                     </div>
                     <div style="text-align: center;margin-top: 2%;" class="col-sm-3 col-md-3 col-xl-3">
-                        <p style="margin-bottom: 0%;">{{notanswered}}</p>
+                        <p style="margin-bottom: 0%;">{{quizDetails.notAnswered}}</p>
                         <p style="margin-bottom: 0%;">Not Answered</p>
                     </div>
                     <div style="text-align: center;margin-top: 2%;" class="col-sm-3 col-md-3 col-xl-3">
-                        <p style="margin-bottom: 0%;">{{marked}}</p>
+                        <p style="margin-bottom: 0%;">{{quizDetails.marked}}</p>
                         <p style="margin-bottom: 0%;">Marked</p>
                     </div>
                     <div style="text-align: center;margin-top: 2%;" class="col-sm-3 col-md-3 col-xl-3">
-                        <p style="margin-bottom: 0%;">{{notvisited}}</p>
+                        <p style="margin-bottom: 0%;">{{quizDetails.notVisited}}</p>
                         <p style="margin-bottom: 0%;">Not Visited</p>
                     </div>
                 </div>
             </section>
         </div>
-        <div class="col-sm-2 col-md-2 col-xl-2" style="border: 1px solid black;padding: 3px;">
+        <div class="col-sm-2 col-md-2 col-xl-2" style="border: 1px solid black;">
             <div class="row">
-                <div class="col-sm-5 col-md-5 col-xl-5">
+                <div class="col-sm-1 col-md-5 col-xl-5">
                     <img style="max-width: 50%;" class="center" src="../assets/user.png"/>
                     <div>{{name}}</div>
                 </div>
-                <div class="col-sm-7 col-md-7 col-xl-7">
-                    <countdown #cd1 [config]="{leftTime: 300}"></countdown>
-                    <button (click)="toggle()" id="pause" class="btn btn-link btn-sm">{{buttonName}}</button>
+                <div class="col-sm-6 col-md-6 col-xl-6">
+                    <countdown #cd1 [config]="config" (event)="handleEvent($event)"></countdown>
+                    <!-- <button (click)="toggle()" id="pause" class="btn btn-link btn-sm">{{buttonName}}</button> -->
                 </div>
             </div>
         </div>
     </div>
-    <div style="height: 20%;">
-        <div class="row" style="border-radius: 2%">
-            <div class="col" style="border: 1px solid black;padding: 4px;">
-                <div class="glider-contain multiple">
-                    <button aria-label="Previous" class="glider-prev"> < </button>
-                    <div class="glider">
-                        <button *ngFor="let no of numbers;index as i" style="margin-right: 5px" (click)="index(no)">
-                            {{i+1}}
-                        </button>
-                    </div>
-                    <button aria-label="Next" class="glider-next"> > </button>
-                </div>
+    <div style="height: 10%;padding-right: 1%;padding-left: 1%;">
+        <div class="row" style="border-radius: 2%;">
+            <div class="col" style="border: 1px solid black;padding: 4px;text-align: center;">
+                <button autofocus type="button" class="btn btn-primary" *ngFor="let no of numbers;index as i" 
+                style="margin-right: 5px;" (click)="passCurrentQuestionId(no)">
+                    {{i+1}}
+                </button>
             </div>
         </div>
     </div>
-    <div class="row" style="border: 1px solid black;">
-        <div class="col-sm-7 col-md-7 col-xl-7" style="background-color: whitesmoke;padding:1% ">
-            <cdk-virtual-scroll-viewport itemSize="150" style="height: 500px;">
+    <div class="row" style="border: 1px solid black;margin-right: 0%;">
+        <div class="col-sm-7 col-md-7 col-xl-7" style="background-color: whitesmoke;padding:1% ;border-right: 1px black solid">
+            <cdk-virtual-scroll-viewport itemSize="150" style="height: 200px;">
                 <h5>Directions: </h5><p>Read the following questions carefully and answer the question that follow.</p>
                 <p>{{populateQuestionData.question}}</p>
                 <a href="{{retrievedImage}}" class="MagicZoom">
@@ -65,30 +60,37 @@
             </cdk-virtual-scroll-viewport>
         </div>
         <div class="col-sm-5 col-md-5 col-xl-5" style="background-color: whitesmoke;padding:1%">
-            <cdk-virtual-scroll-viewport itemSize="150" style="height: 500px;">
+            <cdk-virtual-scroll-viewport itemSize="150" style="height: 200px;">
                 <p>Which of the following can be conclusively answered from the passage?</p>
-                    <div class="form-check">
-                        <input type="radio" name="exampleRadio" value="1" (change)="optionSel($event)">
-                        <span style="margin-left: 1em;">{{populateQuestionData.option1}}</span>
-                    </div>
-                    <div class="form-check">
-                        <input type="radio" name="exampleRadio" value="2" (change)="optionSel($event)">
-                        <span style="margin-left: 1em;">{{populateQuestionData.option2}}</span>                    
-                    </div>
-                    <div class="form-check">
-                        <input type="radio" name="exampleRadio" value="3" (change)="optionSel($event)">
-                        <span style="margin-left: 1em;">{{populateQuestionData.option3}}</span>
-                    </div>
-                    <div class="form-check">
-                        <input type="radio" name="exampleRadio" value="4" (change)="optionSel($event)">
-                        <span style="margin-left: 1em;">{{populateQuestionData.option4}}</span>
-                    </div>
-                </cdk-virtual-scroll-viewport>
+                <div class="form-check">
+                    <input type="radio" id="chaitanya1" [(ngModel)]="clearResponse" name="exampleRadio" value="1" [checked]="populateQuestionData.selectedOption == 1 ? true : false" (change)="optionSel($event)">
+                    <span style="margin-left: 1em;">{{populateQuestionData.option1}}</span>
+                </div>
+                <div class="form-check">
+                    <input type="radio" id="chaitanya2" [(ngModel)]="clearResponse" name="exampleRadio" value="2" [checked]="populateQuestionData.selectedOption == 2 ? true : false" (change)="optionSel($event)">
+                    <span style="margin-left: 1em;">{{populateQuestionData.option2}}</span>                    
+                </div>
+                <div class="form-check">
+                    <input type="radio" id="chaitanya3" [(ngModel)]="clearResponse" name="exampleRadio" value="3" [checked]="populateQuestionData.selectedOption == 3 ? true : false" (change)="optionSel($event)">
+                    <span style="margin-left: 1em;">{{populateQuestionData.option3}}</span>
+                </div>
+                <div class="form-check">
+                    <input type="radio" id="chaitanya4" [(ngModel)]="clearResponse" name="exampleRadio" value="4" [checked]="populateQuestionData.selectedOption == 4 ? true : false" (change)="optionSel($event)">
+                    <span style="margin-left: 1em;">{{populateQuestionData.option4}}</span>
+                </div>
+            </cdk-virtual-scroll-viewport>
         </div>
     </div>
-    <div class="row" style="margin-left: 90%;">
-        <!-- <input type="button" style="margin-right: 2px;" value="Mark for review & Next"/> -->
-        <!-- <input type="button" value="Clear Response"> -->
-        <input class="button" type="submit" value="Save & Next" (click)="saveAnswer()">
+    <div class="row">
+        <div class="col-md-4 col-sm-4 col-xl-4">
+            <input type="button" style="margin-right: 2px;" value="Mark for review & Next"/>
+            <input type="button" value="Clear Response" (click)="clear()">
+        </div>
+        <div class="col-md-6 col-sm-6 col-xl-6"></div>
+        <div class="col-md-2 col-sm-2 col-xl-2">
+            <!-- <input class="button" type="submit" [(ngModel)]="disable" placeholder="Save & Next" value="Save & Next" (click)="saveAnswer()">             -->
+            <button class="btn btn-primary btn-sm" [disabled]="isDisabled" type="submit" (click)="saveAnswer()">Save & Next</button>
+        </div>
+        <!-- <div class="col-md-1 col-sm-1 col-xl-1" style="padding-right: 0;"></div> -->
     </div>
 </div>

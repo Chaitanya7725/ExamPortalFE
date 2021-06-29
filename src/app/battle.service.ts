@@ -18,7 +18,7 @@ export class BattleService {
     return this.http.get(this.API+"/"+id);
   }
 
-  public saveAnswer(options: { cqid: any; os: any; }) {
+  public saveAnswer(options: { cqid: any; os: any; quizId:any}) {
     return this.http.post(this.API+"/answer",options,{responseType:'text' as 'json'});
   }
 }

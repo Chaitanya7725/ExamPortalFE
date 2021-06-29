@@ -1,10 +1,9 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-import { CountdownComponent } from 'ngx-countdown';
+import { ActivatedRoute, Router } from '@angular/router';
+import { CountdownComponent, CountdownConfig } from 'ngx-countdown';
 import { BattleService } from '../battle.service';
 import { Question } from '../question';
 import { QuizService } from '../quiz.service';
-import { QuizOperationsComponent } from '../quiz/quiz-operations/quiz-operations.component';
 
 @Component({
   selector: 'app-battle',
@@ -17,50 +16,68 @@ export class BattleComponent implements OnInit {
   numbers1=[] as any;
   arr = [] as any;
   name='Chaitanya';
-  answered=10;
-  notanswered=15;
-  marked=3;
-  notvisited=14;
-  @ViewChild('cd1', { static: false })
-  private nameElementRef!: CountdownComponent;
+  answered=0;
+  notAnswered=0;
+  marked=0;
+  notVisited=0;
+  @ViewChild('cd1', { static: false }) private nameElementRef!: CountdownComponent;
+  config: any;
   public show:boolean = false;
   public buttonName:any = 'Pause';
   quizIdV: any;
   populateQuestionData=[] as any;
   retrievedImage: any;
-  p=  {
-    id:0,
-    question:"",
-    mark:0,
-    quiz:{},
-    option1:"",
-    option2:"",
-    option3:"",
-    option4:"",
-    correctOption:0
-  };
-  question:Question=new Question();
-  optionSelected: any;
-  currentQuestionId: number=0;
+  clearResponse:any;
+  isDisabled: boolean;
   options={
     cqid:0,
-    os:0
+    os:0,
+    quizId:0
   };
+  // p=  {
+  //   id:0,
+  //   question:"",
+  //   mark:0,
+  //   quiz:{},
+  //   option1:"",
+  //   option2:"",
+  //   option3:"",
+  //   option4:"",
+  //   correctOption:0
+  // };
+  quizDetails:any;
+  time:number=0;
+  question:Question=new Question();
+  optionSelected: number=0;
+  questionId: number=0;
   battleImage: any;
   base64Data: any;
-
+  nextIndex: any;
   constructor(private service:BattleService,
     private route: ActivatedRoute,
-    private quiz:QuizService) {
-      this.route.params.subscribe(params=>this.quizIdV=params.id);
+    private quiz:QuizService,
+    private router: Router) {
+      this.route.params.subscribe(params=>this.quizIdV=params.id);  
+      this.isDisabled=false;
       this.service.getQuestionsCount(this.quizIdV).subscribe(
         (params)=>{
           this.numbers=params;
-          this.getQuestionById(parseInt(this.numbers[0]));
-        });
+          this.passCurrentQuestionId(parseInt(this.numbers[0]));
+      });
     }
   
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.quiz.getQuizById(this.quizIdV).subscribe(
+      params=> {
+        this.quizDetails=params;
+        this.quizDetails=JSON.parse(this.quizDetails);
+        this.config={ leftTime:(this.quizDetails.time)*60};
+    });
+  }
+  // ngAfterContentInit(){
+  //   console.log("ngAfterContentInit")
+  //   this.setLeftTime();
+  // }
 
   toggle() {
     this.show = !this.show;
@@ -83,6 +100,7 @@ export class BattleComponent implements OnInit {
 
   getQuestionById(optionalParams:number){
     this.retrievedImage="";
+    this.clear();
     this.service.getQuestionById(optionalParams).subscribe(
       (params)=>{
         this.populateQuestionData=params;
@@ -100,30 +118,72 @@ export class BattleComponent implements OnInit {
     );
   }
 
-  index(i:number){
-    this.currentQuestionId=i;
+  passCurrentQuestionId(i:number){
+    this.questionId=i;
+    // if((this.numbers.length-1)== this.numbers.indexOf(i) ){
+    //   this.isDisabled =true;
+    // }else{
+    //   this.isDisabled=false;
+    // }
     this.getQuestionById(i);
   }
 
   saveAnswer(){
-    this.options={
-      cqid:this.numbers[this.currentQuestionId],
-      os:Number.parseInt(this.optionSelected)
-    };
-    if(this.options.os!=null){
+    this.options.cqid=this.questionId;
+    if(this.optionSelected==0){
+      this.options.os=0;
+    } else if(this.optionSelected>0){
+      this.options.os=this.optionSelected;
+    } else{
+      this.options.os=this.populateQuestionData.selectedOption;
+    }
+    // this.options.os=this.optionSelected || this.populateQuestionData.selectedOption;
+    this.options.quizId=this.quizIdV;
+    console.log(this.populateQuestionData.selectedOption+" "+this.optionSelected);
+    // if(this.options.os !=NaN && this.populateQuestionData.selectedOption!=this.options.os){
+    if(this.options.os!=NaN && this.options.os!=undefined){
+      console.log("calling api ");
       this.service.saveAnswer(this.options).subscribe();
     }
 
-    var nextIndex=this.numbers.indexOf(this.currentQuestionId);
-    if(nextIndex<this.numbers.length){
-      this.index(this.numbers[nextIndex+1]);
-      this.optionSelected=false
+    var currentIndex=this.numbers.indexOf(this.questionId);
+    if((this.numbers.length-1)==currentIndex){
+      this.nextIndex=0;
+    }else if(currentIndex<this.numbers.length){
+      this.nextIndex=currentIndex+1;
     }
+    this.passCurrentQuestionId(this.numbers[this.nextIndex]);
+    this.clear();
   }
 
   optionSel(event:any){
+    // console.log(event.target.value);
     this.optionSelected=event.target.value;
   }
+  clear(){
+    this.clearResponse=false;
+    this.options.os=0;
+    this.populateQuestionData.selectedOption="";
+  }
+
+  handleEvent(event:any){
+    if(event.left==0){
+      setInterval(() => {},1000)
+      this.router.navigate(['/dashboard']);
+    }
+  }
+
+  // getQuizDetails(){
+  //   this.quiz.getQuizById(this.quizIdV).subscribe(
+  //     params=> {
+  //       this.quizDetails=params;
+  //       this.quizDetails=JSON.parse(this.quizDetails);
+  //   });
+  // }
+
+  // setLeftTime(){
+  //   this.config={ leftTime: (this.quizDetails.time)*60 };
+  // }
 
 }
 
